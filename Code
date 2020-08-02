@@ -1,0 +1,123 @@
+import requests 
+from tkinter import *
+
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+
+url = "https://api.covid19india.org/csv/latest/state_wise.csv"
+url_district='https://api.covid19india.org/csv/latest/district_wise.csv'
+df = pd.read_csv(url)
+ds = pd.read_csv(url_district).set_index(['State','District'])
+cols = ['Confirmed','Active','Recovered','Deceased']
+ds1 = ds[cols]
+#df1 = ds.groupby(['State','District'])
+#plt.figure(figsize=(16,10))
+#df1 =  ds1.loc["Uttar Pradesh"]['Recovered']
+#df1.plot(kind='bar')
+
+
+
+
+
+l=[]
+c=[]
+r=[]
+d=[]
+a=[]
+N = len(df['State'])
+
+for i in range(1,len(df['State'])):
+    l.append(df['State'][i])
+    c.append(df['Confirmed'][i])
+    r.append(df['Recovered'][i])
+    d.append(df['Deaths'][i])
+    a.append(df['Active'][i])
+    
+
+
+plt.figure(figsize=(16,10))
+p1 = plt.barh(l,a,color='y',label='Active')
+p2 = plt.barh(l,r,left=a,color='g',label='Recovered')
+
+p3 = plt.barh(l,d,left =np.array(a)+np.array(r),color='r',label='Deaths')
+plt.legend()
+plt.xlabel("Number of cases")
+plt.ylabel("States")
+plt.show()
+
+
+root = Tk()
+root.title("Covid-19 Meter")
+root.geometry("400x200")
+
+clicked = StringVar()
+clicked.set("Uttar Pradesh")
+click = StringVar()
+click.set("Active")
+
+options = ['Maharashtra', 
+           'Tamil Nadu', 
+           'Delhi', 
+           'Karnataka', 
+           'Andhra Pradesh', 
+           'Uttar Pradesh', 
+           'Gujarat', 
+           'West Bengal', 
+           'Telangana', 
+           'Rajasthan', 
+           'Bihar', 
+           'Haryana', 
+           'Assam', 
+           'Madhya Pradesh', 
+           'Odisha', 
+           'Jammu and Kashmir', 
+           'Kerala', 
+           'Punjab', 
+           'Jharkhand', 
+           'Chhattisgarh', 
+           'Uttarakhand', 
+           'Goa', 
+           'Tripura', 
+           'Puducherry', 
+           'Manipur', 
+           'Himachal Pradesh', 
+           'Ladakh', 
+           'Nagaland', 
+           'Arunachal Pradesh', 
+           'Chandigarh', 
+           'Dadra and Nagar Haveli and Daman and Diu', 
+           'Meghalaya', 
+           'Sikkim', 
+           'Mizoram', 
+           'Andaman and Nicobar Islands', 
+           'State Unassigned', 
+           'Lakshadweep']
+
+def graph():
+    df1 =  ds1.loc[clicked.get()][click.get()]
+    
+    plt.figure(figsize=(16,10))
+    cond = click.get()
+    if cond == 'Recovered':c='g'
+    elif cond == 'Active':c='b'
+    elif cond == 'Deceased':c='r'
+    else:c='y'
+    df1.plot(kind='bar',color=c)
+    plt.show()
+    
+    
+    
+    
+    
+
+    
+
+drop = OptionMenu(root,clicked,*options)
+drop1 = OptionMenu(root,click,"Active","Recovered","Deceased","Confirmed")
+drop.pack()
+drop1.pack()
+myButton = Button(root,text="Show",command=graph).pack()
+root.mainloop()
+
+    
